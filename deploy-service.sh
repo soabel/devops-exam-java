@@ -32,4 +32,4 @@ docker build -t myjavaapp . && docker tag myjavaapp gcr.io/exam-devops/myjavaapp
 
 echo --Deploy to Kubernetes Cluster
 
-kubectl apply -f deploy/kubernetes/deployment.yml && kubectl apply -f deploy/kubernetes/service.yml && kubectl apply -f deploy/cabernets/ingress.yml
+kubectl apply -f deploy/kubernetes/deployment.yml && kubectl apply -f deploy/kubernetes/service.yml && kubectl apply -f deploy/kubernetes/ingress.yml
