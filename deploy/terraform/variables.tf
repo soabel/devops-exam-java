@@ -5,7 +5,7 @@ variable "cluster-description"{
     default ="Cluster k8 to task 2"
 }
 variable "project"{
-    default ="devops-exam-273820"
+    default ="devops-soabel"
 }
 variable "region"{
     default ="us-central1"
