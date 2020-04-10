@@ -13,7 +13,7 @@ cd -
 
 echo --Configure Google Registry
 
-pwdkubectl create secret docker-registry gcr-json-key \
+kubectl create secret docker-registry gcr-json-key \
 --docker-server=eu.gcr.io \
 --docker-username=_json_key \
 --docker-password="$(cat deploy/terraform/credentials.json)" \
