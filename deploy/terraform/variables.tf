@@ -1,17 +1,17 @@
 variable "cluster-name"{
-    default ="exam-cluster-task2"
+    default ="{CLUSTER_NAME}"
 }
 variable "cluster-description"{
-    default ="Cluster k8 to task 2"
+    default ="{CLUSTER_DESCRIPTION}"
 }
 variable "project"{
-    default ="devops-soabel"
+    default ="{PROJECT_ID}"
 }
 variable "region"{
-    default ="us-central1"
+    default ="{REGION}"
 }
 variable "zone"{
-    default ="us-central1-c"
+    default ="{REGION}-c"
 }
 variable "node_count"{
     default =1

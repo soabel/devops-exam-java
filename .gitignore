@@ -40,3 +40,4 @@ target/classes/META-INF/maven/com.soabel/exam/pom.properties
 #terraform
 *terraform-provider-google*
 lock.json
+credentials.json
