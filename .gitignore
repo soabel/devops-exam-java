@@ -33,3 +33,10 @@ target/
 blog/bin/
 **/.tern-project
 target/classes/META-INF/maven/com.soabel/exam/pom.properties
+
+#others
+.DS_Store
+
+#terraform
+*terraform-provider-google*
+lock.json
