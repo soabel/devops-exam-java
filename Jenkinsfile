@@ -1,3 +1,5 @@
+@Library('jenkins-library@master') _
+
 pipeline {
     agent any 
     environment {
@@ -14,6 +16,14 @@ pipeline {
                 sh 'pwd'
                 sh 'docker ps' 
                 sh 'gcloud info' 
+            }
+            
+        }
+        stage('Pre build') {
+            steps {
+                mavenBuild(
+                    image: "image test library"
+                )
             }
         }
         stage('Build') {
