@@ -3,18 +3,35 @@
   gather_facts: false
   become: true
   tasks:
-
+  ## INSTALL YUM
     - name: Install yum
       yum:
         name:
           - wget
           - java-1.8.0-openjdk
 
+  ## INSTALL GIT
     - name: Install git
       yum:
         name: git
         state: present
 
+  ## INSTALL PYTHON
+    # - name: Check for Python
+    #   raw: test -e /usr/bin/python
+    #   changed_when: false
+    #   failed_when: false
+    #   register: check_python
+
+    - name: Install Python
+      raw: sudo dnf install python3
+      # when: check_python.rc != 0
+
+    - name: Install docker-py
+      raw: pip3 install docker-py
+      # when: check_python.rc != 0
+
+  ## INSTALL JENKINS
     - name: Download jenkins.repo
       get_url:
         url: http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo
@@ -40,19 +57,17 @@
       wait_for: timeout=30
 
     - name: Get init password Jenkins
-      stat:
-        path: /etc/file.txt
-      register: stat_result
-      ignore_errors: yes
-    #   shell: cat /var/lib/jenkins/secrets/initialAdminPassword
-    #   changed_when: false
-    #   register: result
+      shell: cat /var/lib/jenkins/secrets/initialAdminPassword
+      register: result
+      changed_when: false
+      failed_when: false
 
     - name: Print init password Jenkins
       debug:
         var: result.stdout
+      ignore_errors: yes
 
-    # INSTALL MAVEN
+  ## INSTALL MAVEN
 
     - name: Install maven
       yum:
@@ -81,7 +96,11 @@
         url: https://download.docker.com/linux/centos/docker-ce.repo
         dest: /etc/yum.repos.d/docker-ce.repo
       become: yes
- 
+
+    - name: Add remote containerd.io package
+      yum: name=https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm
+      become: yes
+
     - name: Install Docker
       package:
         name: docker-ce
@@ -94,10 +113,31 @@
         state: started
         enabled: yes
       become: yes
- 
-    - name: Add user artem to docker group
+
+    - name: Add user jenkins to docker group
       user:
-        name: artem
+        name: jenkins
         groups: docker
         append: yes
       become: yes
+ 
+    # - name: Add user <USER_SSH> to docker group
+    #   user:
+    #     name: <USER_SSH>
+    #     groups: docker
+    #     append: yes
+    #   become: yes
+
+    - name: Add user alfredobenaute to docker group
+      user:
+        name: alfredobenaute
+        groups: docker
+        append: yes
+      become: yes
+    
+    - name: Pull Maven Image
+      docker_image:
+        name: maven:3.6.3-jdk-8
+        source: pull
+
+
