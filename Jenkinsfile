@@ -13,6 +13,8 @@ pipeline {
                 sh 'whoami' 
                 sh 'pwd'
                 sh 'docker ps' 
+                sh 'gcloud version' 
+                sh 'kubectl version' 
             }
         }
         stage('Build') {
