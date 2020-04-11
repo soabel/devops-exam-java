@@ -3,11 +3,17 @@
   gather_facts: false
   become: true
   tasks:
+
     - name: Install yum
       yum:
         name:
           - wget
           - java-1.8.0-openjdk
+
+    - name: Install git
+      yum:
+        name: git
+        state: present
 
     - name: Download jenkins.repo
       get_url:
@@ -34,10 +40,64 @@
       wait_for: timeout=30
 
     - name: Get init password Jenkins
-      shell: cat /var/lib/jenkins/secrets/initialAdminPassword
-      changed_when: false
-      register: result
+      stat:
+        path: /etc/file.txt
+      register: stat_result
+      ignore_errors: yes
+    #   shell: cat /var/lib/jenkins/secrets/initialAdminPassword
+    #   changed_when: false
+    #   register: result
 
     - name: Print init password Jenkins
       debug:
         var: result.stdout
+
+    # INSTALL MAVEN
+
+    - name: Install maven
+      yum:
+        name: maven
+        state: latest
+        
+  # INSTALL DOCKER
+
+    - name: Install yum utils
+      yum:
+        name: yum-utils
+        state: latest
+ 
+    - name: Install device-mapper-persistent-data
+      yum:
+        name: device-mapper-persistent-data
+        state: latest
+ 
+    - name: Install lvm2
+      yum:
+        name: lvm2
+        state: latest
+ 
+    - name: Add Docker repo
+      get_url:
+        url: https://download.docker.com/linux/centos/docker-ce.repo
+        dest: /etc/yum.repos.d/docker-ce.repo
+      become: yes
+ 
+    - name: Install Docker
+      package:
+        name: docker-ce
+        state: latest
+      become: yes
+ 
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+      become: yes
+ 
+    - name: Add user artem to docker group
+      user:
+        name: artem
+        groups: docker
+        append: yes
+      become: yes
