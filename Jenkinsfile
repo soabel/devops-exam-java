@@ -12,9 +12,6 @@ pipeline {
     stages {
         stage('Initialize') {
             steps {
-                sh 'whoami' 
-                sh 'pwd'
-                sh 'docker ps' 
                 sh 'gcloud info' 
             }
             
@@ -22,7 +19,7 @@ pipeline {
         stage('Pre build') {
             steps {
                 mavenBuild(
-                    image: "image test library"
+                    image: "image test"
                 )
             }
         }
