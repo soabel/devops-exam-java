@@ -13,6 +13,7 @@ pipeline {
                 sh 'whoami' 
                 sh 'pwd'
                 sh 'docker ps' 
+                sh 'gcloud info' 
             }
         }
         stage('Build') {
@@ -32,7 +33,7 @@ pipeline {
             }
             steps {
                 sh """
-                    docker build -t ${APP_NAME} . && docker tag ${APP_NAME} ${DOCKER_IMAGE_TAG} && docker push ${DOCKER_IMAGE_TAG}
+                    docker build -t ${APP_NAME} . && docker tag ${APP_NAME} ${DOCKER_IMAGE_TAG} && sudo docker push ${DOCKER_IMAGE_TAG}
                 """
             }
         }
@@ -43,8 +44,19 @@ pipeline {
             }
             steps {
                 sh """
-                    kubectl apply -f deploy/kubernetes/deployment-out.yml \
-                    kubectl apply -f deploy/kubernetes/service-out.yml \
+                    cp deploy/kubernetes/deployment.yml deploy/kubernetes/deployment-out.yml 
+                    cp deploy/kubernetes/service.yml deploy/kubernetes/service-out.yml 
+                    cp deploy/kubernetes/ingress.yml deploy/kubernetes/ingress-out.yml 
+
+                    sed -i -e "s/<APP_NAME>/${APP_NAME}/g" deploy/kubernetes/deployment-out.yml 
+                    sed -i -e "s+<DOCKER_IMAGE_TAG>+${DOCKER_IMAGE_TAG}+g" deploy/kubernetes/deployment-out.yml
+                    sed -i -e "s/<DOCKER_IMAGE_PORT>/${DOCKER_IMAGE_PORT}/g" deploy/kubernetes/deployment-out.yml 
+
+                    sed -i -e "s/<APP_NAME>/${APP_NAME}/g" deploy/kubernetes/service-out.yml 
+                    sed -i -e "s/<APP_NAME>/${APP_NAME}/g" deploy/kubernetes/ingress-out.yml 
+
+                    kubectl apply -f deploy/kubernetes/deployment-out.yml && \
+                    kubectl apply -f deploy/kubernetes/service-out.yml && \
                     kubectl apply -f deploy/kubernetes/ingress-out.yml
                 """
             }
