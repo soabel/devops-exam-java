@@ -8,7 +8,7 @@ pipeline {
         DOCKER_IMAGE_PORT=8080
     }
     stages {
-        stage('Build') {
+        stage('Initialize') {
             steps {
                 sh 'whoami' 
                 sh 'pwd' 
