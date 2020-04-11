@@ -3,6 +3,7 @@
 
 ## VARIABLE DEFINITIONS
 
+CREDENTIALS_FILE="~\/credentials.json"
 CLUSTER_NAME="exam-cluster-task2"
 CLUSTER_DESCRIPTION="Test Cluster"
 PROJECT_ID="devops-soabel"
@@ -10,17 +11,18 @@ REGION="us-central1"
 NODE_COUNT=1
 MACHINE_TYPE="n1-standard-1"
 
-
 ## REPLACE VARIABLRS
+cp credentials.json ~/credentials.json
 
 cp deploy/terraform/variables.tf.txt deploy/terraform/variables-out.tf
+
+sed -i -e "s/{CREDENTIALS_FILE}/$CREDENTIALS_FILE/g" deploy/terraform/variables-out.tf
 sed -i -e "s/{CLUSTER_NAME}/$CLUSTER_NAME/g" deploy/terraform/variables-out.tf
 sed -i -e "s/{CLUSTER_DESCRIPTION}/$CLUSTER_DESCRIPTION/g" deploy/terraform/variables-out.tf
 sed -i -e "s/{PROJECT_ID}/$PROJECT_ID/g" deploy/terraform/variables-out.tf
 sed -i -e "s/{REGION}/$REGION/g" deploy/terraform/variables-out.tf
 sed -i -e "s/{NODE_COUNT}/$NODE_COUNT/g" deploy/terraform/variables-out.tf
 sed -i -e "s/{MACHINE_TYPE}/$MACHINE_TYPE/g" deploy/terraform/variables-out.tf
-
 
 echo --Initialize Terraform: cd deploy/terraform/ && terraform init 
 
