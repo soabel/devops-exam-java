@@ -106,13 +106,6 @@
         name: docker-ce
         state: latest
       become: yes
- 
-    - name: Start Docker service
-      service:
-        name: docker
-        state: started
-        enabled: yes
-      become: yes
 
     - name: Add user jenkins to docker group
       user:
@@ -134,10 +127,22 @@
         groups: docker
         append: yes
       become: yes
+     
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+      become: yes
     
     - name: Pull Maven Image
       docker_image:
         name: maven:3.6.3-jdk-8
         source: pull
 
+    - name: Install Kubectl
+      yum: 
+        name: kubectl
+        state: present
+      
 
