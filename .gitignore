@@ -41,5 +41,7 @@ target/classes/META-INF/maven/com.soabel/exam/pom.properties
 *terraform-provider-google*
 lock.json
 credentials.json
-deploy/terraform/variables-out.tf
-deploy/terraform/variables-out.tf-e
+*-out.*
+terraform.tfstate
+terraform.tfstate*
+.terraform*

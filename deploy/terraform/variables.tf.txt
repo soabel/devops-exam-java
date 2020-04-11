@@ -23,3 +23,6 @@ variable "node_count"{
 variable "machine_type"{
     default ="{MACHINE_TYPE}"
 }
+variable "server_name"{
+    default ="{JENKIS_SERVER_NAME}"
+}
