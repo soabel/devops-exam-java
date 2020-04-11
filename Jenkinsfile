@@ -16,8 +16,9 @@ pipeline {
             }
             
         }
-        stage('Pre build') {
+        stage('Build') {
             steps {
+                // call to shared library
                 mavenBuild(
                     image: "image test"
                 )
