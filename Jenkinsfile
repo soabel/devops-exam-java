@@ -26,17 +26,17 @@ pipeline {
                 )
             }
         }
-        stage('Build') {
-            agent {
-                docker {
-                    reuseNode true
-                    image 'maven:3.6.3-jdk-8'
-                }
-            }
-            steps {
-                sh 'mvn clean install' 
-            }
-        }
+        // stage('Build') {
+        //     agent {
+        //         docker {
+        //             reuseNode true
+        //             image 'maven:3.6.3-jdk-8'
+        //         }
+        //     }
+        //     steps {
+        //         sh 'mvn clean install' 
+        //     }
+        // }
         stage('Build and Push Docker Image') {
             when {
                 branch 'master'
