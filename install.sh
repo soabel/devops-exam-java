@@ -25,10 +25,10 @@ if [[ "$2" != "" ]]; then
 fi
 
 ## VARIABLE DEFINITIONS
-APP_NAME="mypythonapp"
+APP_NAME="myjavaapp"
 CREDENTIALS_FILE="~/credentials.json"
-CLUSTER_NAME="exam-cluster-task1"
-CLUSTER_DESCRIPTION="Test Cluster"
+CLUSTER_NAME="exam-cluster-task2"
+CLUSTER_DESCRIPTION="Test Cluster task 2"
 PROJECT_ID="devops-soabel"
 REGION="us-central1"
 NODE_COUNT=1
@@ -36,7 +36,7 @@ MACHINE_TYPE="n1-standard-1"
 ACCOUNT_EMAIL=socrateslaiza@gmail.com
 DOCKER_IMAGE_VERSION=0.0.1
 DOCKER_IMAGE_TAG="gcr.io/$PROJECT_ID/$APP_NAME:$DOCKER_IMAGE_VERSION"
-DOCKER_IMAGE_PORT=80
+DOCKER_IMAGE_PORT=8080
 JENKINS_SERVER_NAME="jenkins-master"
 
 ## REPLACE VARIABLES
@@ -65,7 +65,7 @@ sed -i -e "s/<DOCKER_IMAGE_PORT>/$DOCKER_IMAGE_PORT/g" deploy/kubernetes/deploym
 sed -i -e "s/<APP_NAME>/$APP_NAME/g" deploy/kubernetes/service-out.yml 
 sed -i -e "s/<APP_NAME>/$APP_NAME/g" deploy/kubernetes/ingress-out.yml 
 
-exit -1 # TODO: borrar
+# exit -1 # TODO: borrar
 
 echo --2: INITIALIZE TERRAFORM | tee -a $OUTPUT
 

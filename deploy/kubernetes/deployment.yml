@@ -1,22 +1,22 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: myjavaapp
+  name: <APP_NAME>
   namespace: default
 spec:
   selector:
     matchLabels:
-      run: myjavaapp
+      run: <APP_NAME>
   template:
     metadata:
       labels:
-        run: myjavaapp
+        run: <APP_NAME>
     spec:
       containers:
     #   - image: nginx:latest
-      - image: gcr.io/exam-devops/myjavaapp:0.0.1
+      - image: <DOCKER_IMAGE_TAG>
         imagePullPolicy: IfNotPresent
-        name: myjavaapp
+        name: <APP_NAME>
         ports:
-        - containerPort: 8080
+        - containerPort: <DOCKER_IMAGE_PORT>
           protocol: TCP
