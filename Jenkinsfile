@@ -9,10 +9,16 @@ pipeline {
     }
     stages {
         stage('Build') {
+            steps {
+                sh 'whoami' 
+                sh 'pwd' 
+            }
+        }
+        stage('Build') {
             agent {
                 docker {
                     reuseNode true
-                    image 'maven:3.6.3-jdk-11'
+                    image 'maven:3.6.3-jdk-8'
                 }
             }
             steps {
