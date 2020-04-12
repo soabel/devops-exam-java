@@ -3,6 +3,7 @@
 
 ## ARGUMENTS
 
+
 if [ -z $1 ] ; then
   echo "First parameter needed. CREATE | DESTROY" && exit 1;
 fi
@@ -38,6 +39,7 @@ DOCKER_IMAGE_VERSION=0.0.1
 DOCKER_IMAGE_TAG="gcr.io/$PROJECT_ID/$APP_NAME:$DOCKER_IMAGE_VERSION"
 DOCKER_IMAGE_PORT=8080
 JENKINS_SERVER_NAME="jenkins-master"
+LOCAL_USER="alfredobenaute"
 
 ## REPLACE VARIABLES
 echo --1: REPLACE VARIABLES | tee -a $OUTPUT
@@ -108,7 +110,7 @@ if [[ "$OPERATION" == "DESTROY" ]]; then
 
     pwd
     
-    terraform destroy | tee -a $OUTPUT
+    yes yes | terraform destroy | tee -a $OUTPUT
 
     echo --The Cluster: $CLUSTER_NAME was deleted | tee -a $OUTPUT
 
@@ -117,7 +119,9 @@ fi
 echo -e | tee -a $OUTPUT
 echo --3: CREATE KUBERNETES CLUSTER: $CLUSTER_NAME | tee -a $OUTPUT
 
-terraform apply | tee -a $OUTPUT
+# terraform plan | tee -a $OUTPUT
+yes yes | terraform apply | tee -a $OUTPUT
+
 echo --The Cluster: $CLUSTER_NAME was created | tee -a $OUTPUT
 
 if [[ !($(gcloud container clusters list | grep -c $CLUSTER_NAME) -ge 0) ]]; then
@@ -129,11 +133,28 @@ echo Kubernetes Cluster created: $CLUSTER_NAME | tee -a $OUTPUT
 
 cd -
 
-echo --4: CONNECT TO Kubernetes Cluster: $CLUSTER_NAME | tee -a $OUTPUT
+# VALIDATE EXISTS SERVICE
+EXISTS_SVC=`kubectl get svc | grep -e $APP_NAME`
+if [[ $EXISTS_SVC ]]; then
+    echo --Application: $APP_NAME exists in cluster:  $CLUSTER_NAME | tee -a $OUTPUT
+    exit 0
+fi
+
+echo --4: ANSIBLE => CREATE JENKINS SERVER
+
+JENKINS_IP_ADDRESS=$(gcloud compute instances list | grep "$JENKINS_SERVER_NAME" | tail -1 | awk '{ print $5 }')
+
+echo -e "[jenkins]\n${JENKINS_IP_ADDRESS} ansible_user=$LOCAL_USER" > deploy/ansible/hosts
+
+yes yes | ansible jenkins -i deploy/ansible/hosts -m ping --private-key=~/.ssh/google_compute_engine | tee -a $OUTPUT
+
+yes yes | ansible-playbook -i deploy/ansible/hosts deploy/ansible/jenkins.yml --private-key=~/.ssh/google_compute_engine | tee -a $OUTPUT
+
+echo --5: CONNECT TO Kubernetes Cluster: $CLUSTER_NAME | tee -a $OUTPUT
 
 gcloud container clusters get-credentials $CLUSTER_NAME --region $REGION --project $PROJECT_ID | tee -a $OUTPUT
 
-echo --5: CREATE SECRET TO REGISTRY | tee -a $OUTPUT
+echo --6: CREATE SECRET TO REGISTRY | tee -a $OUTPUT
 
 if [[ !($(kubectl get secret | grep -c gcr-json-key) -ge 0) ]]; then
     kubectl create secret docker-registry gcr-json-key \
@@ -154,15 +175,15 @@ fi
 kubectl patch serviceaccount default \
 -p '{"imagePullSecrets": [{"name": "gcr-json-key"}]}' | tee -a $OUTPUT
 
-echo --6: COMPILE AND PACKAGE - maven
+echo --7: COMPILE AND PACKAGE - maven
 
 mvn clean package
 
-echo --7: BUILD EN PUSH IMAGE TO REGISTRY | tee -a $OUTPUT
+echo --8: BUILD EN PUSH IMAGE TO REGISTRY | tee -a $OUTPUT
 
 docker build -t $APP_NAME . && docker tag $APP_NAME $DOCKER_IMAGE_TAG && docker push $DOCKER_IMAGE_TAG | tee -a $OUTPUT
 
-echo --8: DEPLOY TO KUBERNETES CLUSTER
+echo --9: DEPLOY TO KUBERNETES CLUSTER
 
 kubectl apply -f deploy/kubernetes/deployment-out.yml | tee -a $OUTPUT && \
 kubectl apply -f deploy/kubernetes/service-out.yml | tee -a $OUTPUT && \

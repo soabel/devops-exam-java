@@ -15,7 +15,7 @@ variable "region"{
     default ="{REGION}"
 }
 variable "zone"{
-    default ="{REGION}-c"
+    default ="{REGION}-a"
 }
 variable "node_count"{
     default = "{NODE_COUNT}"
