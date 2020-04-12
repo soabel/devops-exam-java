@@ -140,7 +140,7 @@ if [[ $EXISTS_SVC ]]; then
     exit 0
 fi
 
-echo --4: ANSIBLE => CREATE JENKINS SERVER
+echo --4: ANSIBLE - CREATE JENKINS SERVER
 
 JENKINS_IP_ADDRESS=$(gcloud compute instances list | grep "$JENKINS_SERVER_NAME" | tail -1 | awk '{ print $5 }')
 
