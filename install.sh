@@ -133,18 +133,13 @@ echo Kubernetes Cluster created: $CLUSTER_NAME | tee -a $OUTPUT
 
 cd -
 
-# VALIDATE EXISTS SERVICE
-EXISTS_SVC=`kubectl get svc | grep -e $APP_NAME`
-if [[ $EXISTS_SVC ]]; then
-    echo --Application: $APP_NAME exists in cluster:  $CLUSTER_NAME | tee -a $OUTPUT
-    exit 0
-fi
-
 echo --4: ANSIBLE - CREATE JENKINS SERVER
 
 JENKINS_IP_ADDRESS=$(gcloud compute instances list | grep "$JENKINS_SERVER_NAME" | tail -1 | awk '{ print $5 }')
 
 echo -e "[jenkins]\n${JENKINS_IP_ADDRESS} ansible_user=$LOCAL_USER" > deploy/ansible/hosts
+
+cat deploy/ansible/hosts
 
 yes yes | ansible jenkins -i deploy/ansible/hosts -m ping --private-key=~/.ssh/google_compute_engine | tee -a $OUTPUT
 
@@ -174,6 +169,14 @@ fi
 
 kubectl patch serviceaccount default \
 -p '{"imagePullSecrets": [{"name": "gcr-json-key"}]}' | tee -a $OUTPUT
+
+# VALIDATE EXISTS SERVICE
+EXISTS_SVC=`kubectl get svc | grep -e $APP_NAME`
+if [[ $EXISTS_SVC ]]; then
+    echo --Application: $APP_NAME exists in cluster:  $CLUSTER_NAME | tee -a $OUTPUT
+    exit 0
+fi
+
 
 echo --7: COMPILE AND PACKAGE - maven
 

@@ -23,7 +23,7 @@ resource "google_compute_instance" "default" {
 }
 
 resource "google_compute_firewall" "http-server" {
-  name    = "default-allow-http-terraform"
+  name    = "jenkins-allow-http"
   network = "default"
 
   allow {
